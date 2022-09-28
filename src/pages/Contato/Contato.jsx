@@ -2,7 +2,7 @@ import { database } from "../../services/firebase"
 import { push, ref, set } from "firebase/database"
 
 import { useState } from 'react'
-import styles from './Contato.modules.css'
+import styles from './contato.module.css'
 import contatoImg from '../../assets/contato.svg'
 
 function Contato (){

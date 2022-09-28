@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react'
-import styles from './comentarios.modules.css'
+import { FiTrash2, FiPlus } from 'react-icons/fi'
+import { nanoid } from 'nanoid'
+
 import comentariosImg from '../../assets/comentarios.svg'
-import { FiPlus, FiTrash2 } from 'react-icons/fi'
-import {nanoid} from 'nanoid'
+import styles from './comentarios.modules.css'
 
-
-function Comentarios () {
-const getLocalStorage = () => {
+const Comentarios = () => {
+const getLocalList = () => {
     let items = localStorage.getItem('list')
 
     if (items) {
@@ -14,38 +14,35 @@ const getLocalStorage = () => {
     } else {
         return[]
     }
-        
 }
 
-const [list, setList] = useState([getLocalStorage])
-const [task, setTask] = useState('')
+const [list, setList] = useState([getLocalList])
+const [newTask, setNewTask] = useState('')
 
-function handleInput (event) {
-    setTask(event.target.value)
-  }
-  function handleCreateTask(){
-  const newTask = {
+function handleCreateNewTask(){
+  const task = {
     id: nanoid(),
-    title:task 
+    title: newTask,
+    isComplete: false 
 }
 
-if (newTask.title === '') {
+if (task.title === '') {
     return
 }
 
-setList([...list, newTask])
-
-setTask('')
+setList([...list, task])
+setNewTask('')
+}
 
 function handleRemoveTask (id) {
-    const tasksFiltered = list.filter(item => item.id !== id)
-    setList(tasksFiltered) 
+    const tasksFiltered = list.filter(task => task.id !== id)
+    setList(tasksFiltered)
 }
 
 useEffect(() => {
 localStorage.setItem('list', JSON.stringify(list))
 }, [list])
-  }
+  
     return(
         <>
             <div className={styles.header}>
@@ -59,11 +56,11 @@ localStorage.setItem('list', JSON.stringify(list))
                 className={styles.input}
                 type="text"
                 placeholder="Digite sua mensagem aqui"
-                onChange={handleInput}
-                value={task}
+                onChange={(e) => setNewTask (e.target.value)}
+                value={newTask}
                 />
                 <div className={styles.addContainer}>
-                <button className={styles.adsTask} onClick={handleCreateTask}>
+                <button className={styles.addTask} type="submit" onClick={handleCreateNewTask}>
                     <FiPlus size={16} color="#fff"/>
                 </button>
                 </div>
@@ -71,11 +68,13 @@ localStorage.setItem('list', JSON.stringify(list))
 
             <main>
                 <ul className={styles.listItems}>
-                    {list.map(item => {
+                    {list.map(task => {
                         return(
-                            <li key={item.id}>
-                                <p>(item.title)</p>
-                                <button className={styles.removeTask} onClick={() => handleRemoveTask(item.id)}>
+                            <li key={task.id}>
+                                <div>
+                                    <p>{task.title}</p>
+                                </div>
+                                <button className={styles.removeTask} type="button" data-testid="remove-task" onClick={() => handleRemoveTask(task.id)}>
                                 <FiTrash2 size={16} />
                                 </button>
                             </li>
